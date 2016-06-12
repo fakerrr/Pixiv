@@ -35,10 +35,6 @@ class GetPixiv():
     def main(self):
         if self.login():
             print('登陆成功')
-            # i = 1
-            # while i < 57261500:
-            #     self.get_images(i)
-            #     i += 1
             i = 1
             while True:
                 try:
@@ -69,9 +65,6 @@ class GetPixiv():
                     print('timeout')
                 i += 1
                 print(i)
-                # if i % 100 == 0:
-                #     print('sleep')
-                #     time.sleep(3)
         else:
             print('登陆失败，请重新运行程序')
 
@@ -86,8 +79,8 @@ class GetPixiv():
             postkey_html = urllib.request.urlopen(self.login_getpostkey_url).read().decode('utf-8')
             pattern = re.compile(r'post_key".*?"(.*?)"')
             post_key = re.findall(pattern, postkey_html)
-            post_data2 = urllib.parse.urlencode({'pixiv_id':'lu973076977@qq.com',
-                                                'password':'lu19930913',
+            post_data2 = urllib.parse.urlencode({'pixiv_id':'pixivtest@tom.com',
+                                                'password':'pixivtest',
                                                 'captcha':'',
                                                 'g_recaptcha_response':'',
                                                 'post_key':'%s' %(post_key[0]),
@@ -137,41 +130,26 @@ class GetPixiv():
             images_url = re.findall(original_image_pattern,self.res_html)
             self.images_url = images_url[0]
             if images_url is None:
-                # print('这里木有图，到下一个去了。')
                 return False
             else:
-                # print('这里有图，我来看看评分和分辨率')
                 score_count_pattern = re.compile(r'"score-count">(.*?)</dd>')
                 self.score_count = int(re.findall(score_count_pattern,self.res_html)[0])
                 if self.score_count > 50000:
-                    # print('这图评分:%d分，我收了' %self.score_count)
                     px_pattern = re.compile(r'<li>(\d+)×(\d+)</li>')
                     px = re.findall(px_pattern,self.res_html)
-                    # print(px)
-                    # print(type(px))
-                    # print(px[0][0],px[0][1])
-                    # print(type(px[0][0]))
                     self.px_w = int(px[0][0])
                     self.px_h = int(px[0][1])
-                    # print('图的分辨率为%d*%d' %(self.px_w, self.px_h))
                     return '5Wscore'
                 elif self.score_count < 5000:
-                    # print('评分小于1000，这图我不要')
                     return False
                 else:
                     px_pattern = re.compile(r'<li>(\d+)×(\d+)</li>')
                     px = re.findall(px_pattern,self.res_html)
-                    # print(px)
-                    # print(type(px))
-                    # print(px[0][0],px[0][1])
-                    # print(type(px[0][0]))
                     self.px_w = int(px[0][0])
                     self.px_h = int(px[0][1])
-                    # print('图的分辨率为%d*%d' %(self.px_w, self.px_h))
                     return '5K-5Wscore'
         except IndexError as e:
-                # print('这里没有图片')
-                return 'SB'
+                return False
 
     def judge_px(self):
         if self.px_w > 1920 and self.px_h > 1080:
